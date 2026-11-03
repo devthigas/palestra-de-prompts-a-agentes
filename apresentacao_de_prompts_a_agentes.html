@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>De Prompts a Agentes: A Nova Era da IA | Apresentação</title>
+  <style>
+    :root {
+      /* Tema Claro (Light Theme) */
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-card-hover: #ffffff;
+      --border-card: #e2e8f0;
+      --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+      --card-shadow-hover: 0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+      --accent-cyan: #0284c7;
+      --accent-indigo: #4f46e5;
+      --accent-purple: #7c3aed;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --text-main: #1e293b;
+      --text-heading: #0f172a;
+      --text-muted: #475569;
+      --text-subtle: #64748b;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    /* Suporte a Tema Escuro Opcional */
+    body.dark-theme {
+      --bg-primary: #070a12;
+      --bg-secondary: #0f1629;
+      --bg-card: rgba(18, 26, 48, 0.85);
+      --bg-card-hover: rgba(28, 40, 72, 0.95);
+      --border-card: rgba(99, 102, 241, 0.25);
+      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+      --card-shadow-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.6);
+      --accent-cyan: #06b6d4;
+      --accent-indigo: #6366f1;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f1f5f9;
+      --text-heading: #ffffff;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Ambient Background Glow (Suave e Limpo) */
+    .ambient-glow {
+      position: fixed;
+      top: -20%;
+      left: -20%;
+      width: 140%;
+      height: 140%;
+      background: radial-gradient(circle at 15% 25%, rgba(79, 70, 229, 0.05) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 75%, rgba(2, 132, 199, 0.05) 0%, transparent 45%),
+                  radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body.dark-theme .ambient-glow {
+      background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
+                  radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+    }
+
+    /* Top Progress Bar */
+    .progress-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: rgba(0, 0, 0, 0.04);
+      z-index: 100;
+    }
+    body.dark-theme .progress-bar-container {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-indigo), var(--accent-purple), var(--accent-cyan));
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+    }
+
+    /* Deck Container */
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 2.25rem 3.5rem 4.5rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      overflow-x: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.99) translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+      pointer-events: none;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+    }
+
+    .slide::-webkit-scrollbar {
+      width: 6px;
+    }
+    .slide::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .slide::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+
+    .slide-inner {
+      width: 100%;
+      max-width: 1160px;
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0.5rem 0;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Typography & Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+      margin-bottom: 0.85rem;
+      width: fit-content;
+    }
+
+    .badge-cyan {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-color: #bae6fd;
+    }
+
+    .badge-emerald {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+
+    .badge-amber {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .badge-rose {
+      background: #fff1f2;
+      color: #be123c;
+      border-color: #fecdd3;
+    }
+
+    .badge-purple {
+      background: #f5f3ff;
+      color: #6d28d9;
+      border-color: #ddd6fe;
+    }
+
+    body.dark-theme .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+      margin-bottom: 0.85rem;
+      width: fit-content;
+    }
+    body.dark-theme .badge-cyan {
+      background: rgba(6, 182, 212, 0.15);
+      color: #67e8f9;
+      border-color: rgba(6, 182, 212, 0.35);
+    }
+    body.dark-theme .badge-emerald {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    body.dark-theme .badge-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fde68a;
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    body.dark-theme .badge-rose {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.35);
+    }
+    body.dark-theme .badge-purple {
+      background: rgba(168, 85, 247, 0.15);
+      color: #d8b4fe;
+      border-color: rgba(168, 85, 247, 0.35);
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 3.8vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 0.65rem;
+      color: var(--text-heading);
+      letter-spacing: -0.025em;
+    }
+
+    h2 {
+      font-size: clamp(1.65rem, 2.6vw, 2.15rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.65rem;
+      color: var(--text-heading);
+      letter-spacing: -0.015em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 60%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+      color: var(--text-muted);
+      line-height: 1.45;
+      max-width: 900px;
+      margin-bottom: 1rem;
+    }
+
+    /* Grids & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.15rem;
+      width: 100%;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 0.95rem;
+      padding: 1.15rem 1.35rem;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: #cbd5e1;
+      transform: translateY(-3px);
+      box-shadow: var(--card-shadow-hover);
+    }
+    body.dark-theme .card:hover {
+      border-color: rgba(99, 102, 241, 0.45);
+    }
+
+    .card-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 0.65rem;
+      background: #eef2ff;
+      color: var(--accent-indigo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 1px solid #e0e7ff;
+      flex-shrink: 0;
+    }
+    body.dark-theme .card-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 0.65rem;
+      background: #eef2ff;
+      color: var(--accent-indigo);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 1px solid #e0e7ff;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 0.35rem;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .highlight-stat {
+      font-size: 2.6rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Estilos para Imagens Reais */
+    .image-frame {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 0.95rem;
+      padding: 0.65rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      height: 100%;
+    }
+    .image-frame:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-2px);
+    }
+    .slide-img {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      background: #ffffff;
+      border-radius: 0.65rem;
+      display: block;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    body.dark-theme .slide-img {
+      background: rgba(15, 23, 42, 0.6);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .slide-img-contain {
+      object-fit: contain;
+      background: #f8fafc;
+      padding: 0.5rem;
+    }
+    .img-caption {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      line-height: 1.35;
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* Comparison Table */
+    .table-container {
+      width: 100%;
+      border-radius: 0.95rem;
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      margin-top: 0.65rem;
+    }
+
+    .clean-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .clean-table th {
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.65rem 0.85rem;
+      border-bottom: 2px solid var(--border-card);
+      text-align: left;
+    }
+    body.dark-theme .clean-table th {
+      background: rgba(15, 23, 42, 0.85);
+      color: #94a3b8;
+    }
+
+    .clean-table td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      vertical-align: middle;
+      color: var(--text-main);
+    }
+    body.dark-theme .clean-table td {
+      border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .clean-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .clean-table tr:hover td {
+      background: rgba(248, 250, 252, 0.7);
+    }
+    body.dark-theme .clean-table tr:hover td {
+      background: rgba(99, 102, 241, 0.06);
+    }
+
+    .clock-badge {
+      font-size: 0.88rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-indigo);
+      background: #eef2ff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid #c7d2fe;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    body.dark-theme .clock-badge {
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.25);
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      box-shadow: var(--card-shadow);
+      margin-top: 1rem;
+    }
+
+    .compare-table th, .compare-table td {
+      border-bottom: 1px solid var(--border-card);
+      font-size: 0.92rem;
+      color: var(--text-main);
+    }
+
+    .compare-table th {
+      background: #f1f5f9;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #475569;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border-card);
+    }
+    body.dark-theme .compare-table th {
+      background: rgba(15, 23, 42, 0.8);
+      color: #94a3b8;
+    }
+
+    .compare-table td {
+      border-bottom: 1px solid var(--border-card);
+      font-size: 0.92rem;
+      color: var(--text-main);
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-table tr:hover td {
+      background: rgba(241, 245, 249, 0.6);
+    }
+    body.dark-theme .compare-table tr:hover td {
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    /* Quote Block */
+    .quote-box {
+      border-left: 4px solid var(--accent-indigo);
+      background: #f8fafc;
+      border-top: 1px solid var(--border-card);
+      border-right: 1px solid var(--border-card);
+      border-bottom: 1px solid var(--border-card);
+      padding: 0.85rem 1.25rem;
+      border-radius: 0 0.85rem 0.85rem 0;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--text-heading);
+      margin: 0.85rem 0;
+      line-height: 1.5;
+      box-shadow: var(--card-shadow);
+    }
+    body.dark-theme .quote-box {
+      border-left: 4px solid var(--accent-indigo);
+      background: #f8fafc;
+      border-top: 1px solid var(--border-card);
+      border-right: 1px solid var(--border-card);
+      border-bottom: 1px solid var(--border-card);
+      padding: 0.85rem 1.25rem;
+      border-radius: 0 0.85rem 0.85rem 0;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--text-heading);
+      margin: 0.85rem 0;
+      line-height: 1.5;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Bottom Control Bar */
+    .controls {
+      position: fixed;
+      bottom: 1.15rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      border: 1px solid #cbd5e1;
+      border-radius: 9999px;
+      padding: 0.4rem 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      z-index: 100;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    body.dark-theme .controls {
+      position: fixed;
+      bottom: 1.15rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+      border: 1px solid #cbd5e1;
+      border-radius: 9999px;
+      padding: 0.4rem 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      z-index: 100;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .ctrl-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      color: var(--text-heading);
+      background: #e2e8f0;
+    }
+    body.dark-theme .ctrl-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .slide-number {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      font-variant-numeric: tabular-nums;
+      min-width: 65px;
+      text-align: center;
+    }
+
+    .timer-badge {
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-indigo);
+      background: #eef2ff;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid #c7d2fe;
+    }
+    body.dark-theme .timer-badge {
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.1);
+      border-color: rgba(6, 182, 212, 0.25);
+    }
+
+    /* Speaker Notes Modal */
+    .notes-drawer {
+      position: fixed;
+      right: -440px;
+      top: 0;
+      width: 420px;
+      height: 100vh;
+      background: #ffffff;
+      border-left: 1px solid var(--border-card);
+      z-index: 110;
+      transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 30px rgba(15, 23, 42, 0.1);
+    }
+    body.dark-theme .notes-drawer {
+      background: rgba(11, 17, 33, 0.98);
+      border-left-color: var(--border-card);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .notes-drawer.open {
+      right: 0;
+    }
+
+    .notes-drawer h3 {
+      font-size: 1.15rem;
+      color: var(--accent-indigo);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--border-card);
+      padding-bottom: 0.75rem;
+    }
+
+    .notes-content {
+      font-size: 1.02rem;
+      color: var(--text-main);
+      line-height: 1.7;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      flex: 1;
+    }
+
+    .notes-content p {
+      margin-bottom: 1.1rem;
+    }
+
+    /* Overview Grid Modal */
+    .overview-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(248, 250, 252, 0.96);
+      backdrop-filter: blur(25px);
+      z-index: 120;
+      display: none;
+      flex-direction: column;
+      padding: 3rem;
+      overflow-y: auto;
+    }
+    body.dark-theme .overview-modal {
+      background: rgba(7, 10, 18, 0.96);
+    }
+
+    .overview-modal.open {
+      display: flex;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .overview-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 0.85rem;
+      padding: 1rem 1.15rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--card-shadow);
+    }
+
+    .overview-item:hover {
+      border-color: var(--accent-indigo);
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .overview-item.active {
+      border-color: var(--accent-indigo);
+      background: #eef2ff;
+      border-width: 2px;
+    }
+    body.dark-theme .overview-item.active {
+      background: rgba(99, 102, 241, 0.2);
+    }
+
+    .overview-num {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .overview-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow"></div>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Slides Deck Container -->
+  <main class="deck" id="deck">
+
+    <!-- Slide 1: Capa -->
+    <section class="slide active" data-notes="Boa noite a todos! Sejam muito bem-vindos. Hoje nós estamos aqui para falar de uma das maiores transformações da história recente da computação. Todos nós já ouvimos falar de inteligência artificial, mas hoje nós vamos entender a verdadeira mudança que está acontecendo agora: por que o 'prompt' deixou de ser o ápice da tecnologia e como os 'Agentes' estão assumindo a execução de tarefas reais no mundo concreto.">
+      <div class="slide-inner">
+        <div class="badge badge-cyan">Palestra Especial</div>
+        <h1>De Prompts a Agentes:<br><span class="gradient-text">A Nova Era da IA</span></h1>
+        <p class="subtitle">Da estatística preditiva à revolução dos sistemas autônomos e produtos com inteligência artificial.</p>
+        <div style="display: flex; gap: 2rem; margin-top: 1rem; color: var(--text-muted); font-size: 1.15rem;">
+          <div><strong>Palestrante:</strong> Prof. Thiago</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: Roteiro da Apresentação -->
+    <section class="slide" data-notes="Nossa conversa está dividida em 8 blocos estratégicos. Nós vamos cruzar história da arte, fundamentos técnicos de computação, casos reais de negócios milionários e demonstrações ao vivo no terminal.">
+      <div class="slide-inner">
+        <div class="badge">Visão Geral da Apresentação</div>
+      <h2>O Roteiro da Nossa Jornada</h2>
+      <div class="grid-4" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-icon">01</div>
+          <div class="card-title">Origem & Prática</div>
+          <div class="card-desc">Minha jornada e a IA no meu cotidiano real (Antigravity, Moises AI, NotebookLM).</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">02</div>
+          <div class="card-title">A Lição da História</div>
+          <div class="card-desc">Da pintura a óleo ao daguerreótipo e às câmeras digitais de bolso.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">03</div>
+          <div class="card-title">A Evolução da IA</div>
+          <div class="card-desc">De 1960 aos modelos estatísticos preditivos e à ruptura dos Transformers.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">04</div>
+          <div class="card-title">A Nova Era</div>
+          <div class="card-desc">A fadiga do Prompt Engineering e o salto para Agentes Autônomos.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">05</div>
+          <div class="card-title">IA Harnesses</div>
+          <div class="card-desc">Por que a janela de chat comum não basta e o que há sob o capô.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">06</div>
+          <div class="card-title">Economia & SaaS</div>
+          <div class="card-desc">Solopreneurs e o caso real do jovem que faturou R$ 100 mil em um único dia.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">07</div>
+          <div class="card-title">Live Demo</div>
+          <div class="card-desc">4 demonstrações práticas com agentes executando tarefas reais.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">08</div>
+          <div class="card-title">O Orquestrador</div>
+          <div class="card-desc">Como se posicionar profissionalmente e debate de perguntas abertas.</div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Quem Sou Eu -->
+    <section class="slide" data-notes="Eu não venho falar de IA apenas pela teoria dos artigos acadêmicos. Falo como alguém que programa todo dia, que dá aulas e que toca contrabaixo. Para mim, a IA se tornou uma colega de bancada que multiplica minhas maiores paixões.">
+      <div class="slide-inner">
+        <div class="badge badge-emerald">Apresentação Pessoal</div>
+      <h2>Três Paixões que Movem Minha Vida</h2>
+      <div class="grid-3" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+          <div class="card-title">Educador & Instrutor</div>
+          <div class="card-desc">Experiência formando novos desenvolvedores e técnicos de tecnologia no SENAI, descomplicando conceitos difíceis.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+          <div class="card-title">Desenvolvedor de Software</div>
+          <div class="card-desc">Construção de aplicações web, APIs, arquiteturas escaláveis e automações de alta produtividade.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+          <div class="card-title">Contrabaixista & Músico</div>
+          <div class="card-desc">Estudo contínuo do contrabaixo elétrico, percepção harmônica, precisão de andamento e teoria musical.</div>
+        </div>
+      </div>
+      <div class="quote-box" style="margin-top: 0.85rem;">
+        "A tecnologia só tem valor real quando sai do papel e transforma a vida prática das pessoas."
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: A IA no Meu Dia a Dia Real -->
+    <section class="slide" data-notes="Vejam que não uso IA para uma coisa só. Uso para orquestrar sistemas no Antigravity, para isolar a linha de baixo numa música antiga dos anos 70 sem embolar com a bateria com o Moises AI, e para devorar centenas de páginas de manuais técnicos com o NotebookLM.">
+      <div class="slide-inner">
+        <div class="badge">Aplicações Concretas</div>
+      <h2>Onde a IA Age na Minha Rotina?</h2>
+      <div class="grid-3" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="card-title">Google Antigravity</div>
+          <div class="card-desc">
+            Orquestração de sistemas, planejamento de materiais pedagógicos e criação de arquiteturas completas com acesso seguro ao ambiente local.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/></svg></div>
+          <div class="card-title">Moises AI</div>
+          <div class="card-desc">
+            Separação espectral de faixas de áudio (*stem separation*). Permite isolar o contrabaixo, mutar instrumentos e desacelerar o andamento para estudo rítmico.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          <div class="card-title">NotebookLM (Google)</div>
+          <div class="card-desc">
+            Pesquisa em profundidade. Análise cruzada de livros e documentações em PDF sem alucinações genéricas da web, com fontes estritamente auditáveis.
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Caso Prático de Ensino: O Playground -->
+    <section class="slide" data-notes="No SENAI, eu vi muitos alunos desistirem nos primeiros dias porque não conseguiam configurar o ambiente no Windows ou Linux. Criei o Playground com auxílio de agentes de IA para que o aluno comece a digitar código em três segundos e veja o resultado imediatamente no navegador.">
+      <div class="slide-inner">
+        <div class="badge badge-cyan">Educação e Agentes</div>
+      <h2>Caso Real: A Plataforma Playground</h2>
+      <p class="subtitle">Como agentes de IA aceleraram o desenvolvimento de uma ferramenta interativa para alunos iniciantes.</p>
+      <div class="grid-2">
+        <div class="card" style="border-left: 4px solid var(--accent-rose);">
+          <div class="card-title" style="color: var(--accent-rose);">Desafios no Ensino Inicial de Programação</div>
+          <div class="card-desc">
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
+              <li>• Instalações complexas de Node.js, compiladores e variáveis de ambiente.</li>
+              <li>• Frustração precoce antes mesmo de entender a lógica de programação.</li>
+              <li>• Evasão de estudantes nas primeiras semanas de aula.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">Solução Pedagógica Desenvolvida</div>
+          <div class="card-desc">
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
+              <li>• Editor interativo de HTML, CSS e JavaScript direto no browser.</li>
+              <li>• Feedback visual instantâneo do código em tempo real.</li>
+              <li>• Agentes de IA gerando desafios progressivos e corrigindo sintaxe.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: A Grande Lição da História -->
+    <section class="slide" data-notes="Sempre que surge uma tecnologia nova, o ser humano entra em pânico. Mas nós já vimos esse filme antes. Voltemos a 1830: se você quisesse a imagem do rosto do seu pai, você dependia de um pintor retratista e de meses de salário de uma família nobre.">
+      <div class="slide-inner">
+        <div class="badge badge-amber">Perspectiva Histórica</div>
+        <h2>O Retrato no Século XIX (1820 - 1830)</h2>
+        <div class="grid-2" style="margin-top: 0.85rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div class="card">
+              <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></div>
+              <div class="card-title">Trabalho Manual Exaustivo</div>
+              <div class="card-desc">Pintores misturavam óleos e pigmentos raros à mão. O cliente posava imóvel durante semanas para um único retrato.</div>
+            </div>
+            <div class="card">
+              <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
+              <div class="card-title">Privilégio Exclusivo das Elites</div>
+              <div class="card-desc">Ter a própria imagem registrada era um luxo reservado à realeza e nobreza. Para a imensa maioria, a memória visual de seus antepassados se perdia para sempre.</div>
+            </div>
+          </div>
+          <div class="image-frame" style="padding: 0.85rem; justify-content: center; align-items: center; background: #ffffff;">
+            <img src="imagens/pintura_oleo.jpg" alt="Mona Lisa (La Gioconda) - Leonardo da Vinci" style="max-height: 250px; width: auto; max-width: 100%; object-fit: contain; border-radius: 0.45rem; box-shadow: 0 4px 14px rgba(0,0,0,0.18);">
+            <div class="img-caption" style="margin-top: 0.65rem; font-style: normal; line-height: 1.4; text-align: center;">
+              <strong style="color: var(--text-heading); font-size: 0.92rem; display: block;">Mona Lisa (La Gioconda)</strong>
+              <span style="color: var(--accent-indigo); font-weight: 700; font-size: 0.84rem;">Autor: Leonardo da Vinci</span> • <span style="color: var(--text-muted); font-size: 0.84rem; font-weight: 600;">Pintada entre 1503 e 1506</span>
+              <div style="color: var(--text-subtle); font-size: 0.78rem; margin-top: 0.2rem;">Óleo sobre madeira de álamo • Museu do Louvre, Paris</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: 1839 - O Daguerreótipo e o Pânico -->
+    <section class="slide" data-notes="Quando o daguerreótipo surgiu, os pintores gritaram que a arte havia chegado ao fim. 'Como vou competir com uma caixa de madeira que desenha com a luz do sol?'. Parecia o fim da linha. Mas a história provou exatamente o oposto.">
+      <div class="slide-inner">
+        <div class="badge badge-rose">A Disrupção Tecnológica</div>
+        <h2>1839: O Surgimento da Fotografia</h2>
+        <p class="subtitle">Louis Daguerre apresenta o Daguerreótipo à Academia de Ciências de Paris.</p>
+        <div class="grid-2" style="margin-top: 0.85rem;">
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="quote-box" style="font-size: 1.35rem; border-left-color: var(--accent-rose); background: #fff1f2; color: #9f1239; margin-top: 0;">
+              "A partir de hoje, a pintura está morta!"<br>
+              <span style="font-size: 0.95rem; font-style: normal; color: #be123c; font-weight: 600;">— Paul Delaroche, pintor francês (1839)</span>
+            </div>
+            <div class="card" style="margin-top: 0.85rem;">
+              <div class="card-title">O Pânico Coletivo dos Pintores</div>
+              <div class="card-desc">
+                Pintores de miniaturas e retratos mecânicos temeram o fim da profissão: como competir com uma máquina que grava a realidade visível em poucos minutos?
+              </div>
+            </div>
+          </div>
+          <div class="image-frame">
+            <img src="imagens/daguerre_1838.jpg" alt="Boulevard du Temple (Paris, 1838) por Daguerre" class="slide-img">
+            <div class="img-caption">Fotografia real: Boulevard du Temple (Paris, 1838), por Louis Daguerre. O primeiro registro da história a capturar a silhueta de uma pessoa viva.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: A Democratização do Retrato: Da Kodak aos Smartphones -->
+    <section class="slide" data-notes="Vejam a revolução histórica da Kodak: até 1888, ter um retrato de si ou da família era um privilégio quase impossível para as pessoas comuns. Pinturas a óleo exigiam fortunas e meses de ateliê, e o daguerreótipo exigia químicos venenosos e estúdios complexos. Foi George Eastman, com a invenção do filme em rolo e da câmera Kodak, que cunhou a frase histórica: 'Você aperta o botão, nós fazemos o resto'. Pela primeira vez, pais e mães puderam fotografar seus filhos no quintal. O retrato se tornou acessível a todos. Esse 'apertar de botão' da Kodak foi a primeira grande democratização da imagem — exatamente o mesmo papel que o Prompt desempenhou ao democratizar o acesso à inteligência artificial.">
+      <div class="slide-inner">
+        <div class="badge badge-emerald">A Democratização da Imagem</div>
+        <h2>Da Kodak aos Smartphones: Retratos Para Todos</h2>
+        <p class="subtitle">Como a tecnologia transferiu o poder de registrar a face humana do ateliê aristocrático para as mãos das famílias comuns.</p>
+        <div class="grid-2" style="margin-top: 0.75rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div class="card" style="padding: 0.75rem 0.95rem;">
+              <div class="card-title" style="font-size: 0.95rem;">1. Retratos Exclusivos (Pré-1888)</div>
+              <div class="card-desc" style="font-size: 0.82rem;">Pinturas a óleo e daguerreótipos eram privilégios da nobreza e elite. Pessoas comuns passavam a vida sem um único retrato próprio.</div>
+            </div>
+            <div class="card" style="padding: 0.75rem 0.95rem; border-left: 3px solid var(--accent-indigo); background: #f8faff;">
+              <div class="card-title" style="font-size: 0.95rem; color: var(--accent-indigo);">2. A Revolução Kodak (1888 — 1900)</div>
+              <div class="card-desc" style="font-size: 0.82rem;">George Eastman cria o filme em rolo flexível e a câmera portátil Brownie com o slogan: <em>"You press the button, we do the rest"</em>. O retrato familiar popular nascia ali.</div>
+            </div>
+            <div class="card" style="padding: 0.75rem 0.95rem;">
+              <div class="card-title" style="font-size: 0.95rem;">3. Smartphones: 5 Bi de Fotos/Dia</div>
+              <div class="card-desc" style="font-size: 0.82rem;">A tecnologia democratizou o botão no bolso do planeta inteiro. O apertador casual proliferou, mas o especialista em composição e luz seguiu insubstituível.</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div class="image-frame" style="padding: 0.5rem; height: auto;">
+              <img src="imagens/camera_kodak.jpg" alt="Câmera Kodak (1888/1900)" style="max-height: 110px; width: auto; object-fit: contain; margin: 0 auto; display: block; border-radius: 0.4rem;">
+              <div class="img-caption" style="font-size: 0.73rem; margin-top: 0.35rem;"><strong>Câmera Kodak Brownie (1900):</strong> A primeira a popularizar retratos caseiros para pessoas comuns. O primeiro "botão" da história visual.</div>
+            </div>
+            <div class="image-frame" style="padding: 0.5rem; height: auto;">
+              <img src="imagens/smartphone_camera.jpg" alt="Fotografia com smartphone moderno" style="max-height: 110px; width: auto; object-fit: contain; margin: 0 auto; display: block; border-radius: 0.4rem;">
+              <div class="img-caption" style="font-size: 0.73rem; margin-top: 0.35rem;"><strong>Smartphones modernos:</strong> Mais de 5 bilhões de fotos diárias. A democratização radical do botão no bolso de todos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: O Contraste: Ferramentas do Pintor vs Ferramentas da IA -->
+    <section class="slide" data-notes="Aqui está o paralelo direto: o prompt de chat é como o tubo de tinta pronta; você ainda precisa pintar cada pedacinho na mão, copiando e colando blocos. O Agente de IA é o sistema que assume a execução operacional inteira: ele prepara a tela, aplica as camadas, roda os testes e conserta as falhas sozinho. O humano passa a atuar como o Mestre do Ateliê ou Arquiteto-Chefe.">
+      <div class="slide-inner">
+        <div class="badge badge-cyan">Matriz de Contraste Histórico</div>
+        <h2>Ferramentas do Pintor vs. Ferramentas da IA</h2>
+        <div class="table-container">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th style="width: 22%;">Fase Histórica</th>
+                <th style="width: 26%;">No Mundo da Pintura</th>
+                <th style="width: 32%;">No Mundo da Inteligência Artificial</th>
+                <th style="width: 20%;">Papel Humano</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge" style="margin: 0; padding: 0.15rem 0.5rem; font-size: 0.72rem;">1. Artesanal</span></td>
+                <td>Moer minérios e preparar tintas e telas à mão no ateliê</td>
+                <td>Escrita de código linha a linha e fórmulas estatísticas rígidas</td>
+                <td>Operador braçal (100% manual)</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-amber" style="margin: 0; padding: 0.15rem 0.5rem; font-size: 0.72rem;">2. Auxiliar</span></td>
+                <td>Tinta em tubo (1841) e Câmera Kodak ("aperte o botão")</td>
+                <td><strong>Era dos Prompts:</strong> o modelo gera textos/códigos soltos</td>
+                <td>Operador que copia, cola e valida na mão</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-emerald" style="margin: 0; padding: 0.15rem 0.5rem; font-size: 0.72rem;">3. Agentes</span></td>
+                <td>A câmera assume a cópia; artista foca em novos movimentos</td>
+                <td style="color: var(--accent-indigo); font-weight: 700;"><strong>Era dos Agentes:</strong> a IA executa tarefas inteiras ponta a ponta</td>
+                <td style="color: var(--accent-indigo); font-weight: 800;">Arquiteto e Orquestrador</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top: 0.75rem; background: #eef2ff; border-color: #c7d2fe; padding: 0.75rem 1.15rem;">
+          <strong style="color: var(--accent-indigo); font-size: 0.92rem;">Conclusão do Paralelo:</strong>
+          <span style="color: var(--text-heading); font-size: 0.88rem; margin-left: 0.35rem;">O prompt entrega a tinta pronta; o Agente de IA assume a execução de tarefas operacionais completas, elevando o profissional ao nível de decisor estratégico.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: A Origem da IA em 1960: Uso Militar e Balística de Mísseis -->
+    <section class="slide" data-notes="Assim como a fotografia começou como química cara restrita a poucos, a IA nasceu em 1960 dentro da Guerra Fria para fins militares. A grande missão não era gerar poesia ou sites: era calcular a distância e a trajetória balística de mísseis intercontinentais e processar telas de radar do sistema de defesa aérea SAGE. Eram supercomputadores de andares inteiros operados por cientistas do exército.">
+      <div class="slide-inner">
+        <div class="badge badge-amber">Contexto Histórico • Anos 1960</div>
+        <h2>Origens da IA: O Uso Militar e Balística</h2>
+        <div class="grid-2" style="margin-top: 0.85rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <div class="card" style="padding: 0.85rem 1rem;">
+              <div class="card-title" style="font-size: 0.98rem;">Cálculo de Distância de Mísseis</div>
+              <div class="card-desc" style="font-size: 0.82rem;">Equações balísticas para calcular trajetórias, alcance de lançamento e pontos de impacto em frações de segundo.</div>
+            </div>
+            <div class="card" style="padding: 0.85rem 1rem;">
+              <div class="card-title" style="font-size: 0.98rem;">Defesa Aérea (Projeto SAGE)</div>
+              <div class="card-desc" style="font-size: 0.82rem;">Redes de computadores gigantes processando dados de radar em tempo real para interceptação de alvos aéreos.</div>
+            </div>
+            <div class="card" style="padding: 0.85rem 1rem;">
+              <div class="card-title" style="font-size: 0.98rem;">Criptografia e Sinais de Inteligência</div>
+              <div class="card-desc" style="font-size: 0.82rem;">Reconhecimento de padrões estatísticos em transmissões militares de rádio durante a Guerra Fria.</div>
+            </div>
+          </div>
+          <div class="image-frame">
+            <img src="imagens/ibm_7090.jpg" alt="Console do supercomputador IBM 7090" class="slide-img">
+            <div class="img-caption">Fotografia histórica real: Console do IBM 7090 (1960), utilizado pela NASA e Departamento de Defesa dos EUA para cálculo de trajetórias balísticas e missões orbitais.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: A Democratização Civil: Do Uso Militar ao Google Tradutor -->
+    <section class="slide" data-notes="Com o barateamento da computação pessoal, a matemática que calculava trajetórias de mísseis passou a ser embutida nos aplicativos civis: o Google Tradutor estatístico, o GPS calculando rotas, o banco aprovando seu empréstimo em três segundos e a câmera do seu celular lendo o seu rosto. Nós já vivíamos cercados de IA no dia a dia, mas havia um limite: ela só calculava e classificava o que já existia.">
+      <div class="slide-inner">
+        <div class="badge badge-emerald">Transição Civil • 1990 a 2015</div>
+        <h2>A IA Chega aos Aplicativos do Cotidiano</h2>
+        <div class="grid-2" style="margin-top: 0.85rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <div class="card" style="padding: 0.85rem 1rem;">
+              <div class="card-title" style="font-size: 0.98rem;">Google Tradutor (Estatístico)</div>
+              <div class="card-desc" style="font-size: 0.82rem;">Pareamento probabilístico cruzando bilhões de frases para encontrar traduções correspondentes.</div>
+            </div>
+            <div class="card" style="padding: 0.85rem 1rem;">
+              <div class="card-title" style="font-size: 0.98rem;">GPS e Rotas Preditivas</div>
+              <div class="card-desc" style="font-size: 0.82rem;">Algoritmos calculando fluxos de trânsito em tempo real e sugerindo trajetos alternativos.</div>
+            </div>
+            <div class="card" style="padding: 0.85rem 1rem;">
+              <div class="card-title" style="font-size: 0.98rem;">Análise de Risco Bancário</div>
+              <div class="card-desc" style="font-size: 0.82rem;">Aprovação de crédito em 3 segundos e bloqueio preditivo de fraudes em cartões.</div>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;">
+            <div class="image-frame" style="padding: 0.45rem;">
+              <img src="imagens/google_translate.png" alt="Google Tradutor" class="slide-img slide-img-contain" style="height: 175px;">
+              <div class="img-caption">Captura real: Interface do Google Tradutor baseada em pareamento estatístico de termos.</div>
+            </div>
+            <div class="image-frame" style="padding: 0.45rem;">
+              <img src="imagens/facial_recognition.jpg" alt="Biometria Facial" class="slide-img" style="height: 175px;">
+              <div class="img-caption">Algoritmo real: Detecção facial por visão computacional embarcada em smartphones.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12: A Grande Ruptura: A IA Generativa que Mudou Tudo -->
+    <section class="slide" data-notes="Em 2017, tudo mudou com o Transformer. Pela primeira vez na história da computação, a IA deixou de ser apenas a calculadora que mede trajetórias ou classifica e-mails, e passou a gerar linguagem, raciocínio e código do zero a partir de um prompt em português. Essa é a IA Generativa que mudou tudo e abriu caminho para os copilotos e, finalmente, para os agentes autônomos.">
+      <div class="slide-inner">
+        <div class="badge badge-purple">A Grande Ruptura • 2017 a 2022</div>
+        <h2>A IA Generativa que Mudou Tudo</h2>
+        <p class="subtitle">A arquitetura Transformer (Google, 2017) quebrou as barreiras da computação analítica.</p>
+        <div class="grid-2" style="margin-top: 0.85rem;">
+          <div class="card">
+            <div class="card-title" style="color: var(--text-muted);">Antes: A IA Preditiva / Estatística</div>
+            <div class="card-desc">
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li>• Calculava a distância de um míssil militar.</li>
+                <li>• Previa se uma transação era fraude ou não (0 ou 1).</li>
+                <li>• Traduzia palavras isoladas em tabelas rígidas.</li>
+                <li>• Incapaz de criar raciocínio novo ou contextual.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-color: var(--accent-purple); background: #faf5ff;">
+            <div class="card-title" style="color: var(--accent-purple);">Depois: A IA Generativa (LLMs)</div>
+            <div class="card-desc">
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li>• Compreende e gera linguagem natural fluida.</li>
+                <li>• Escreve código completo de programação do zero.</li>
+                <li>• Raciocina sobre múltiplos conceitos simultâneos.</li>
+                <li>• Aberta a qualquer pessoa pelo navegador via prompts.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top: 0.85rem; background: #eef2ff; border-color: #c7d2fe; padding: 0.85rem 1.25rem;">
+          <strong style="color: var(--accent-indigo); font-size: 0.95rem;">A Nova Fronteira:</strong>
+          <span style="color: var(--text-heading); font-size: 0.9rem; margin-left: 0.35rem;">A IA deixou de ser uma calculadora de números rígidos e passou a gerar soluções completas, pavimentando a estrada para os Agentes Autônomos.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 13: O Choque do GPT-3.5 e os Copilotos -->
+    <section class="slide" data-notes="Eu lembro como se fosse hoje. Pouco antes de entrar no SENAI, abri o GPT-3.5 e pedi uma rotina completa em PHP com banco de dados. Quando vi aquele código indentado, seguro e funcionando em cinco segundos, eu gravei um vídeo de queixo caído. Os copilotos nasceram ali.">
+      <div class="slide-inner">
+        <div class="badge badge-cyan">Memória Pessoal</div>
+      <h2>O Choque do Código em PHP (Fim de 2022)</h2>
+      <div class="grid-2" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-title">O Teste Antes de Entrar no SENAI</div>
+          <div class="card-desc">
+            <p>Pedi ao GPT-3.5 uma rotina completa de backend em PHP: conexão PDO com banco de dados, sanitização e tratamento de exceções.</p>
+            <p style="margin-top: 0.75rem; color: var(--accent-emerald); font-weight: 700;">Resultado: Código gerado em 5 segundos, limpo e funcionando perfeitamente.</p>
+            <p style="margin-top: 0.75rem;">Gravei um vídeo no dia com a sensação clara de que a programação nunca mais seria a mesma.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">A Chegada dos Copilotos</div>
+          <div class="card-desc">
+            <p>O <strong>GitHub Copilot</strong> popularizou a IA dentro dos editores de código (VS Code).</p>
+            <p style="margin-top: 0.75rem;">Um super "autocompletar" que sugeria a próxima linha.</p>
+            <p style="margin-top: 0.75rem; color: var(--accent-amber); font-weight: 600;">Porém: ainda exigia que o programador verificasse, corrigisse e integrasse cada linha manualmente.</p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 14: A Era dos Prompts e o Gargalo Humano -->
+    <section class="slide" data-notes="Quantos de vocês já não passaram horas copiando código do ChatGPT, colando no VS Code, dando erro, copiando o erro e colando de volta? A era do mero 'prompt engineering' gerou uma fadiga imensa porque o ser humano é o gargalo físico de toda a operação.">
+      <div class="slide-inner">
+        <div class="badge badge-rose">O Limite do Chat</div>
+      <h2>A Fadiga do "Prompt Engineering"</h2>
+      <p class="subtitle">O modelo de chat tradicional transformou o ser humano num estagiário de copia e cola.</p>
+      <div class="grid-4" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-icon">1</div>
+          <div class="card-title">Você digita</div>
+          <div class="card-desc">Escreve o prompt tentando adivinhar as palavras mágicas.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">2</div>
+          <div class="card-title">Você copia</div>
+          <div class="card-desc">Dá Ctrl+C no bloco de código gerado na janela web.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">3</div>
+          <div class="card-title">Dá erro!</div>
+          <div class="card-desc">Cola no terminal local e surge um erro de dependência na linha 42.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">4</div>
+          <div class="card-title">Você cola de volta</div>
+          <div class="card-desc">Avisa o chat do erro e o ciclo recomeça do zero infinitas vezes.</div>
+        </div>
+      </div>
+      <div class="quote-box" style="margin-top: 1.5rem; border-left-color: var(--accent-rose); background: #fff1f2; color: #9f1239;">
+        O LLM no chat comum é um gênio trancado numa sala de vidro sem mãos, pés ou acesso ao computador.
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 15: O que é um Agente de IA? -->
+    <section class="slide" data-notes="Um agente não é um chatbot que responde piadas. Um agente tem olhos para inspecionar seus arquivos e mãos para rodar o terminal. Se ele erra, ele lê a mensagem do compilador e refaz o código sozinho até o sistema funcionar perfeitamente.">
+      <div class="slide-inner">
+        <div class="badge badge-emerald">O Novo Paradigma</div>
+      <h2>O que é, de fato, um Agente de IA?</h2>
+      <p class="subtitle">Um sistema centrado em um modelo de raciocínio, dotado de autonomia de execução no mundo real.</p>
+      <div class="grid-4" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="card-title">1. Percepção</div>
+          <div class="card-desc">Lê arquivos locais, examina diretórios, inspeciona logs de erro e o estado atual do sistema.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></div>
+          <div class="card-title">2. Raciocínio</div>
+          <div class="card-desc">Decompõe objetivos grandes em micro-etapas lógicas sequenciais antes de executar.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <div class="card-title">3. Ferramentas</div>
+          <div class="card-desc">Roda comandos de terminal (Bash), cria e altera arquivos, consome APIs e pesquisa na web.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+          <div class="card-title">4. Auto-Correção</div>
+          <div class="card-desc">Lê o retorno do sistema. Se falhar, diagnostica a causa raiz e corrige sozinho.</div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 16: O Ciclo ReAct / Feedback Loop -->
+    <section class="slide" data-notes="Isso se chama loop ReAct: Reasoning and Acting. Pensar, Agir, Observar e Ajustar. É o mesmo método que um desenvolvedor humano sênior usa quando senta para resolver um bug no projeto.">
+      <div class="slide-inner">
+        <div class="badge">Arquitetura de Agentes</div>
+      <h2>O Loop ReAct: Pensar, Agir e Observar</h2>
+      <div class="card" style="margin-top: 1.5rem; padding: 2rem; background: #f8fafc;">
+        <div style="font-family: var(--font-mono); font-size: 1.05rem; line-height: 2; color: var(--text-heading);">
+          <span style="color: var(--accent-indigo); font-weight: 700;">OBJETIVO:</span> "Construa uma API de cadastro com autenticação JWT e testes."<br>
+          ├── <span style="color: #6366f1; font-weight: 600;">PENSAR:</span> Preciso inicializar o projeto, instalar dependências e criar o banco.<br>
+          ├── <span style="color: var(--accent-emerald); font-weight: 600;">AGIR:</span> Executa `npm init -y && npm install express bcryptjs jsonwebtoken`.<br>
+          ├── <span style="color: var(--accent-amber); font-weight: 600;">OBSERVAR:</span> Terminal acusou versão incompatível de dependência.<br>
+          ├── <span style="color: var(--accent-rose); font-weight: 600;">CORRIGIR:</span> Ajusta versão no `package.json` e reexecuta a instalação.<br>
+          └── <span style="color: var(--accent-cyan); font-weight: 700;">FINALIZAR:</span> Roda os testes unitários (`npm test`) e entrega tudo verde (passando)!
+        </div>
+      </div>
+      <div class="quote-box" style="margin-top: 0.85rem;">
+        Na era do prompt: você pede para a IA <strong>dizer</strong>.<br>
+        Na era dos agentes: você orienta a IA a <strong>fazer, testar e garantir</strong>.
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 17: Por Dentro do Motor: O que é um IA Harness? -->
+    <section class="slide" data-notes="O modelo de linguagem sozinho é só um cérebro numa bandeja. O 'Harness' é o corpo biônico em volta dele. É o que permite que ferramentas como o Google Antigravity e o Claude Code executem comandos com segurança e precisão cirúrgica.">
+      <div class="slide-inner">
+        <div class="badge badge-purple">Infraestrutura Avançada</div>
+      <h2>Por Dentro do Motor: O que é um IA Harness?</h2>
+      <p class="subtitle">A estrutura de sustentação que conecta o modelo ao computador real com total segurança.</p>
+      <div class="grid-3" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="card-title">Sandboxes Seguros</div>
+          <div class="card-desc">Ambientes isolados onde o agente pode compilar e rodar código sem risco de corromper seu sistema operacional.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-6"/><line x1="6" y1="9" x2="6" y2="13"/><line x1="18" y1="9" x2="18" y2="13"/><line x1="10" y1="3" x2="10" y2="9"/><line x1="14" y1="3" x2="14" y2="9"/></svg></div>
+          <div class="card-title">Protocolo MCP</div>
+          <div class="card-desc"><strong>Model Context Protocol:</strong> Padrão aberto global para conectar bancos de dados, GitHub e ferramentas ao agente.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="card-title">Observabilidade</div>
+          <div class="card-desc">Rastreamento de cada pensamento, chamada de ferramenta e log de execução em tempo real com controle do usuário.</div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 18: Comparativo Direto: Chat Web vs. Harness -->
+    <section class="slide" data-notes="Olhem para essa tabela. Ela resume toda a palestra. De um lado, você é o estagiário que copia e cola texto. Do outro, você é o arquiteto chefe que dá a direção e audita a entrega de um time de agentes autônomos.">
+      <div class="slide-inner">
+        <div class="badge badge-cyan">Comparativo Direto</div>
+        <h2>Chat com UI vs. Ambiente com Agentes</h2>
+        <div class="table-container">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th style="width: 24%;">Critério Operacional</th>
+                <th style="width: 38%;">Chat Tradicional (Web UI)</th>
+                <th style="width: 38%; background: #ecfdf5; color: #047857;">Harness com Agentes (Nova Era)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Ambiente de Ação</strong></td>
+                <td>Fica restrito a uma página de texto no navegador</td>
+                <td style="background: #f0fdf4; color: #065f46; font-weight: 600;">Lê e altera arquivos diretamente no computador do projeto</td>
+              </tr>
+              <tr>
+                <td><strong>Execução Prática</strong></td>
+                <td>Simulada ou puramente conceitual</td>
+                <td style="background: #f0fdf4; color: #065f46; font-weight: 600;">Executa comandos reais de terminal e compilação</td>
+              </tr>
+              <tr>
+                <td><strong>Resolução de Falhas</strong></td>
+                <td>Usuário precisa copiar o erro do terminal e colar de volta</td>
+                <td style="background: #f0fdf4; color: #065f46; font-weight: 600;">O agente lê o retorno de erro e se auto-corrige em loop</td>
+              </tr>
+              <tr>
+                <td><strong>Contexto Global</strong></td>
+                <td>Fragmentado e limitado a cada mensagem avulsa</td>
+                <td style="background: #f0fdf4; color: #065f46; font-weight: 600;">Indexa e compreende o projeto inteiro e suas conexões</td>
+              </tr>
+              <tr>
+                <td><strong>Papel do Humano</strong></td>
+                <td>Transportador mecânico de dados (copia e cola)</td>
+                <td style="background: #eef2ff; color: var(--accent-indigo); font-weight: 800;">Arquiteto, Decisor Estratégico e Revisor</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 19: Economia Real da IA: Produtos e Servicos Além do Codigo -->
+    <section class="slide" data-notes="Muito importante: faturar com IA não exige ser um programador sênior com anos de ciência da computação. Pessoas comuns e pequenos empreendedores estão faturando alto criando serviços de automação para comércios locais, estúdios de imagem virtual para e-commerce e produtos digitais úteis com ferramentas no-code e IA.">
+      <div class="slide-inner">
+        <div class="badge badge-emerald">Economia Prática • Além do Código</div>
+        <h2>Como Pessoas e Empresas Faturam com IA</h2>
+        <p class="subtitle">Situações reais de monetização sem necessidade de conhecimento pleno em programação.</p>
+        <div class="grid-4" style="margin-top: 0.85rem;">
+          <div class="card">
+            <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="card-title">1. Agências de Automação (No-Code)</div>
+            <div class="card-desc">Configuração de assistentes de WhatsApp para clínicas e imobiliárias via Make/Zapier + IA. Mensalidades de R$ 1.500 a R$ 5.000 por cliente sem programar backend.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <div class="card-title">2. Catálogos Virtuais para E-Commerce</div>
+            <div class="card-desc">Geração de fotos de estúdio profissionais a partir de fotos tiradas com celular, prestando serviços para marcas e pequenos lojistas que não podem pagar estúdios caros.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div class="card-title">3. Tradução & Dublagem em Massa</div>
+            <div class="card-desc">Produtores de conteúdo traduzindo canais de vídeo e treinamentos corporativos para múltiplos idiomas com sincronia labial via IA, multiplicando faturamento no exterior.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <div class="card-title">4. Micro-Soluções Digitais</div>
+            <div class="card-desc">Ferramentas rápidas para resolver dores específicas de nichos (imobiliário, jurídico, contábil), onde a visão comercial supera o conhecimento técnico aprofundado.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 20: Caso Real Brasileiro: R$ 100 Mil em 1 Dia -->
+    <section class="slide" data-notes="Esse caso do Bruno César, jovem de 20 anos da UFRN, é o exemplo perfeito do poder do vibe coding com inteligência artificial. Ele investiu apenas R$ 3 mil, consumiu a API pública do TSE em tempo real e criou a plataforma Apuração 2026 (seuimposto.com). O site mostrava os resultados por seção eleitoral mais rápido do que a grande mídia tradicional, viralizou e faturou R$ 100 mil em um único dia. Isso prova que a agilidade e a resolução de uma dor de mercado superam meses de burocracia ou a necessidade de anos de ciência da computação.">
+      <div class="slide-inner">
+        <div class="badge badge-amber">Caso Real • Vibe Coding & Mercado</div>
+        <h2>Caso Real: R$ 100 Mil em 24 Horas com IA</h2>
+        <p class="subtitle">Como Bruno César (20 anos, estudante da UFRN) faturou R$ 100 mil em um único dia nas Eleições 2026 usando IA e APIs públicas.</p>
+        <div class="grid-2" style="margin-top: 0.85rem;">
+          <div class="card" style="padding: 0.9rem 1.1rem; display: flex; flex-direction: column; gap: 0.55rem;">
+            <div>
+              <div class="card-title" style="font-size: 0.95rem; color: var(--accent-indigo);">O Criador e a Oportunidade</div>
+              <div class="card-desc" style="font-size: 0.82rem;">
+                <strong>Bruno César</strong>, 20 anos, estudante da UFRN. Identificou a ansiedade nacional pela apuração das Eleições 2026 e a lentidão dos grandes portais de mídia tradicional.
+              </div>
+            </div>
+            <div>
+              <div class="card-title" style="font-size: 0.95rem;">O Projeto & Investimento Mínimo</div>
+              <div class="card-desc" style="font-size: 0.82rem;">
+                Criou o site <strong>Apuração 2026</strong> (seuimposto.com) com um investimento inicial de apenas <strong>R$ 3.000,00</strong>.
+              </div>
+            </div>
+            <div>
+              <div class="card-title" style="font-size: 0.95rem;">Tecnologia: Vibe Coding com IA</div>
+              <div class="card-desc" style="font-size: 0.82rem;">
+                Utilizou conceitos de <em>vibe coding</em> acelerado por IA para consumir a API do <strong>Tribunal Superior Eleitoral (TSE)</strong> por seção eleitoral em tempo real, exibindo resultados mais rápido do que a grande mídia.
+              </div>
+            </div>
+          </div>
+          <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-color: #fde68a; background: #fffbeb; padding: 1.1rem;">
+            <div class="highlight-stat" style="font-size: 2.8rem; background: linear-gradient(135deg, #d97706, #b45309); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              R$ 100.000
+            </div>
+            <div style="font-size: 1.15rem; font-weight: 700; color: #b45309; margin-bottom: 0.25rem;">Faturamento em 1 Único Dia</div>
+            <div style="font-size: 0.85rem; font-weight: 600; color: #92400e; margin-bottom: 0.65rem;">1º Turno das Eleições 2026</div>
+            <div style="color: var(--text-heading); font-size: 0.82rem; line-height: 1.4; max-width: 320px; background: rgba(255, 255, 255, 0.7); padding: 0.65rem 0.85rem; border-radius: 0.5rem; border: 1px solid rgba(217, 119, 6, 0.2);">
+              <strong>Lição Definitiva:</strong> A união entre <em>vibe coding</em>, visão de oportunidade e consumo inteligente de dados públicos supera qualquer estrutura corporativa lenta.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 21: Live Demo: 4 Cenários Práticos -->
+    <section class="slide" data-notes="Neste momento, vamos abrir o terminal e o ambiente de desenvolvimento e executar uma automação de tarefas ao vivo com a plateia acompanhando cada passo na tela.">
+      <div class="slide-inner">
+        <div class="badge badge-cyan">Laboratório ao Vivo</div>
+      <h2>4 Desafios Práticos com Agentes de IA</h2>
+      <div class="grid-2" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-title">1. Faxina e Higienização de Planilhas</div>
+          <div class="card-desc">Padronizar moedas BRL, formatos de datas e tratar valores nulos em planilhas com 15.000 linhas via Python.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">2. De Banco de Dados a Dashboard Interativo</div>
+          <div class="card-desc">Conectar a um banco SQLite cru e gerar painel visual com gráficos interativos em minutos.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">3. App de Prática de Conversação em Inglês</div>
+          <div class="card-desc">Construir app no browser que ouve a voz do aluno, avalia a gramática em tempo real e responde por síntese vocal.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">4. Automação Completa de Arquivos no PC</div>
+          <div class="card-desc">Organizar boletos e faturas em pastas separadas por Ano e Mês lendo os PDFs automaticamente.</div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 22: O Profissional do Futuro: O Orquestrador -->
+    <section class="slide" data-notes="Não tenham medo da IA. Tenham medo de continuar trabalhando como se estivéssemos em 1995. Quem dominar os fundamentos e aprender a orquestrar os agentes terá os melhores empregos e os negócios mais lucrativos do mercado.">
+      <div class="slide-inner">
+        <div class="badge badge-emerald">O Novo Perfil</div>
+      <h2>O Papel do "Orquestrador de Inteligências"</h2>
+      <div class="grid-3" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+          <div class="card-title">1. Visão de Arquitetura</div>
+          <div class="card-desc">Saber o que deve ser construído, os limites éticos, as regras de negócio e os padrões de segurança.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div class="card-title">2. Auditoria e Validação</div>
+          <div class="card-desc">Saber ler e auditar o trabalho do agente. A responsabilidade técnica em produção continua sendo do humano.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="card-title">3. Empatia & Pessoas</div>
+          <div class="card-desc">Identificar as dores reais dos clientes e alunos que nenhuma máquina consegue sentir espontaneamente.</div>
+        </div>
+      </div>
+      <div class="quote-box" style="margin-top: 0.85rem;">
+        "A IA não vai substituir você. Mas o profissional que souber orquestrar agentes com maestria vai substituir quem ficar preso ao passado."
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 23: Perguntas e Respostas Dinâmico -->
+    <section class="slide" data-notes="Essas são as dúvidas que todo mundo tem ao sair daqui hoje. Vamos abrir o microfone para que vocês possam trazer suas próprias perguntas e visões.">
+      <div class="slide-inner">
+        <div class="badge badge-purple">Debate Aberto</div>
+      <h2>Perguntas & Respostas Frequentes</h2>
+      <div class="grid-2" style="margin-top: 0.85rem;">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-indigo);">"E as alucinações?"</div>
+          <div class="card-desc">Agentes mitigam alucinações rodando testes automatizados locais e ancorando dados via RAG e NotebookLM.</div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-indigo);">"Ainda vale a pena estudar lógica?"</div>
+          <div class="card-desc">Mais do que nunca! Assim como um piloto de avião precisa saber voar mesmo com o piloto automático ativado.</div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-indigo);">"E a privacidade dos dados da empresa?"</div>
+          <div class="card-desc">Uso de modelos locais (Ollama) ou APIs empresariais com garantia estrita de retenção zero de dados.</div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-indigo);">"Por onde começo hoje?"</div>
+          <div class="card-desc">Use o NotebookLM para estudar e instale um editor assistido por agentes para automatizar pequenas tarefas da rotina.</div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- Slide 24: Encerramento -->
+    <section class="slide" data-notes="Muito obrigado a cada um de vocês pelo tempo e pela atenção nesta noite. O futuro está em aberto e as ferramentas estão nas nossas mãos. Uma excelente noite a todos!">
+      <div class="slide-inner">
+        <div class="badge badge-cyan">Conclusão</div>
+      <h1>O Futuro Não se Espera.<br><span class="gradient-text">Ele se Orquestra.</span></h1>
+      <p class="subtitle">Obrigado pela presença de todos nesta jornada de prompts a agentes!</p>
+      <div class="card" style="margin-top: 1rem; border-color: #c7d2fe; background: #eef2ff; max-width: 600px;">
+        <div style="font-size: 1.25rem; font-weight: 700; color: var(--accent-indigo);">Sessão de Perguntas e Discussão Técnica</div>
+        <div style="color: var(--text-muted); margin-top: 0.5rem;">Dúvidas, comentários e troca de experiências.</div>
+      </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Floating Control Bar -->
+  <div class="controls">
+    <button class="ctrl-btn" id="prevBtn" title="Slide Anterior (Seta Esquerda)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <div class="slide-number" id="slideIndicator">01 / 24</div>
+    <button class="ctrl-btn" id="nextBtn" title="Próximo Slide (Seta Direita / Espaço)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+    <div style="width: 1px; height: 20px; background: rgba(0,0,0,0.12);"></div>
+    <div class="clock-badge" id="liveClock" title="Relógio em Tempo Real">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="clockTime">00:00:00</span>
+    </div>
+    <button class="ctrl-btn" id="themeBtn" title="Alternar Tema Claro / Escuro (Tecla T)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+    </button>
+    <button class="ctrl-btn" id="notesBtn" title="Notas do Orador (Tecla S)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+    </button>
+    <button class="ctrl-btn" id="overviewBtn" title="Visão Geral de Todos os Slides (Tecla O)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+    </button>
+    <button class="ctrl-btn" id="fullscreenBtn" title="Tela Cheia (Tecla F)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+    </button>
+  </div>
+
+  <!-- Speaker Notes Side Drawer -->
+  <aside class="notes-drawer" id="notesDrawer">
+    <h3>
+      <span>Notas do Apresentador</span>
+      <button class="ctrl-btn" id="closeNotesBtn" style="width: 28px; height: 28px;">✕</button>
+    </h3>
+    <div class="notes-content" id="notesContent">
+      <!-- Injetado dinamicamente -->
+    </div>
+  </aside>
+
+  <!-- Overview Modal -->
+  <div class="overview-modal" id="overviewModal">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <h2>Visão Geral de Todos os Slides</h2>
+      <button class="ctrl-btn" id="closeOverviewBtn" style="font-size: 1.5rem; width: 40px; height: 40px;">✕</button>
+    </div>
+    <div class="overview-grid" id="overviewGrid"></div>
+  </div>
+
+  <script>
+    (function() {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const progressBar = document.getElementById('progressBar');
+      const slideIndicator = document.getElementById('slideIndicator');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const themeBtn = document.getElementById('themeBtn');
+      const notesBtn = document.getElementById('notesBtn');
+      const notesDrawer = document.getElementById('notesDrawer');
+      const closeNotesBtn = document.getElementById('closeNotesBtn');
+      const notesContent = document.getElementById('notesContent');
+      const overviewBtn = document.getElementById('overviewBtn');
+      const overviewModal = document.getElementById('overviewModal');
+      const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+      const overviewGrid = document.getElementById('overviewGrid');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
+      const elapsedTimer = document.getElementById('elapsedTimer');
+
+      let currentSlide = 0;
+      const totalSlides = slides.length;
+
+      // Timer Logic
+      let secondsElapsed = 0;
+      setInterval(() => {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        elapsedTimer.textContent = `${mins}:${secs}`;
+      }, 1000);
+
+      function updateSlide(index) {
+        if (index < 0) index = 0;
+        if (index >= totalSlides) index = totalSlides - 1;
+
+        slides[currentSlide].classList.remove('active');
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+
+        // Progress & Indicator
+        const progress = ((currentSlide + 1) / totalSlides) * 100;
+        progressBar.style.width = `${progress}%`;
+        slideIndicator.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+
+        // Update Notes
+        const notes = slides[currentSlide].getAttribute('data-notes') || 'Sem notas para este slide.';
+        notesContent.innerHTML = `<p>${notes.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+
+        // Update Overview selection
+        document.querySelectorAll('.overview-item').forEach((item, idx) => {
+          if (idx === currentSlide) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+      }
+
+      function nextSlide() {
+        if (currentSlide < totalSlides - 1) {
+          updateSlide(currentSlide + 1);
+        }
+      }
+
+      function prevSlide() {
+        if (currentSlide > 0) {
+          updateSlide(currentSlide - 1);
+        }
+      }
+
+      function toggleTheme() {
+        document.body.classList.toggle('dark-theme');
+      }
+
+      function toggleNotes() {
+        notesDrawer.classList.toggle('open');
+      }
+
+      function toggleOverview() {
+        overviewModal.classList.toggle('open');
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => console.log(err));
+        } else {
+          document.exitFullscreen();
+        }
+      }
+
+      // Populate Overview Grid
+      slides.forEach((slide, idx) => {
+        const item = document.createElement('div');
+        item.className = `overview-item ${idx === 0 ? 'active' : ''}`;
+        
+        let title = slide.querySelector('h1, h2')?.textContent || `Slide ${idx + 1}`;
+        if (title.length > 55) title = title.substring(0, 52) + '...';
+
+        item.innerHTML = `
+          <div class="overview-num">SLIDE ${String(idx + 1).padStart(2, '0')}</div>
+          <div class="overview-title">${title}</div>
+        `;
+
+        item.addEventListener('click', () => {
+          updateSlide(idx);
+          overviewModal.classList.remove('open');
+        });
+
+        overviewGrid.appendChild(item);
+      });
+
+      // Event Listeners
+      nextBtn.addEventListener('click', nextSlide);
+      prevBtn.addEventListener('click', prevSlide);
+      themeBtn.addEventListener('click', toggleTheme);
+      notesBtn.addEventListener('click', toggleNotes);
+      closeNotesBtn.addEventListener('click', () => notesDrawer.classList.remove('open'));
+      overviewBtn.addEventListener('click', toggleOverview);
+      closeOverviewBtn.addEventListener('click', () => overviewModal.classList.remove('open'));
+      fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+      // Keyboard Controls
+      window.addEventListener('keydown', (e) => {
+        if (overviewModal.classList.contains('open')) {
+          if (e.key === 'Escape' || e.key === 'o' || e.key === 'O') {
+            overviewModal.classList.remove('open');
+          }
+          return;
+        }
+
+        switch(e.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+          case ' ':
+          case 'PageDown':
+            e.preventDefault();
+            nextSlide();
+            break;
+          case 'ArrowLeft':
+          case 'ArrowUp':
+          case 'PageUp':
+            e.preventDefault();
+            prevSlide();
+            break;
+          case 'Home':
+            e.preventDefault();
+            updateSlide(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            updateSlide(totalSlides - 1);
+            break;
+          case 't':
+          case 'T':
+            toggleTheme();
+            break;
+          case 's':
+          case 'S':
+            toggleNotes();
+            break;
+          case 'o':
+          case 'O':
+            toggleOverview();
+            break;
+          case 'f':
+          case 'F':
+            toggleFullscreen();
+            break;
+          case 'Escape':
+            if (notesDrawer.classList.contains('open')) {
+              notesDrawer.classList.remove('open');
+            }
+            break;
+        }
+      });
+
+      // Initialize
+      updateSlide(0);
+    })();
+  </script>
+</body>
+</html>
